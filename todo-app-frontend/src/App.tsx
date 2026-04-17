@@ -2,25 +2,35 @@ import reactLogo from './assets/react.svg';
 import viteLogo from './assets/vite.svg';
 import heroImg from './assets/hero.png';
 import TaskList from './components/TaskList';
-import './App.css';
 
 function App() {
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Todo App</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <TaskList />
-      </section>
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+      <main id="main-content">
+        <section id="center">
+          <div className="hero">
+            <img
+              src={heroImg}
+              className="base"
+              width="170"
+              height="179"
+              alt=""
+            />
+            <img src={reactLogo} className="framework" alt="React logo" />
+            <img src={viteLogo} className="vite" alt="Vite logo" />
+          </div>
+          <div>
+            <h1>Todo App</h1>
+            <p>
+              Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
+            </p>
+          </div>
+          <TaskList />
+        </section>
+      </main>
 
       <div className="ticks" />
 
@@ -33,13 +43,23 @@ function App() {
           <p>Your questions, answered</p>
           <ul>
             <li>
-              <a href="https://vite.dev/" target="_blank" rel="noreferrer">
+              <a
+                href="https://vite.dev/"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Explore Vite (opens in a new tab)"
+              >
                 <img className="logo" src={viteLogo} alt="" />
                 Explore Vite
               </a>
             </li>
             <li>
-              <a href="https://react.dev/" target="_blank" rel="noreferrer">
+              <a
+                href="https://react.dev/"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Learn more about React (opens in a new tab)"
+              >
                 <img className="button-icon" src={reactLogo} alt="" />
                 Learn more
               </a>
@@ -58,6 +78,7 @@ function App() {
                 href="https://github.com/vitejs/vite"
                 target="_blank"
                 rel="noreferrer"
+                aria-label="Vite on GitHub (opens in a new tab)"
               >
                 <svg
                   className="button-icon"
@@ -70,7 +91,12 @@ function App() {
               </a>
             </li>
             <li>
-              <a href="https://chat.vite.dev/" target="_blank" rel="noreferrer">
+              <a
+                href="https://chat.vite.dev/"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Vite Discord chat (opens in a new tab)"
+              >
                 <svg
                   className="button-icon"
                   role="presentation"
@@ -82,7 +108,12 @@ function App() {
               </a>
             </li>
             <li>
-              <a href="https://x.com/vite_js" target="_blank" rel="noreferrer">
+              <a
+                href="https://x.com/vite_js"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Vite on X (opens in a new tab)"
+              >
                 <svg
                   className="button-icon"
                   role="presentation"
@@ -98,6 +129,7 @@ function App() {
                 href="https://bsky.app/profile/vite.dev"
                 target="_blank"
                 rel="noreferrer"
+                aria-label="Vite on Bluesky (opens in a new tab)"
               >
                 <svg
                   className="button-icon"

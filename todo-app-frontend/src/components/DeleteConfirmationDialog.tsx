@@ -21,6 +21,7 @@ function DeleteConfirmationDialog({
 }: DeleteConfirmationDialogProps) {
   const dispatch = useAppDispatch();
   const titleId = useId();
+  const messageId = useId();
   const containerRef = useDialogFocusTrap(isOpen, onClose);
 
   if (!isOpen) {
@@ -47,12 +48,13 @@ function DeleteConfirmationDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        aria-describedby={messageId}
         className={styles.panel}
       >
         <h2 id={titleId} className={styles.title}>
           Delete task?
         </h2>
-        <p className={styles.message}>
+        <p id={messageId} className={styles.message}>
           Are you sure you want to delete &ldquo;{taskTitle}&rdquo;? This cannot
           be undone.
         </p>

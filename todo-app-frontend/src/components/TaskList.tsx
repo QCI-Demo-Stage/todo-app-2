@@ -16,30 +16,35 @@ function TaskList() {
 
   if (tasks.length === 0) {
     return (
-      <div className={styles.wrapper}>
-        <h2 className={styles.title}>Tasks</h2>
-        <p className={styles.empty}>No tasks yet.</p>
+      <div className={`${styles.wrapper} task-list-region`}>
+        <h2 className={styles.title} id="tasks-heading">
+          Tasks
+        </h2>
+        <p className={styles.empty} role="status">
+          No tasks yet.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className={styles.wrapper}>
-      <h2 className={styles.title}>Tasks</h2>
-      <ul className={styles.list}>
+    <div className={`${styles.wrapper} task-list-region`}>
+      <h2 className={styles.title} id="tasks-heading">
+        Tasks
+      </h2>
+      <ul className={styles.list} aria-labelledby="tasks-heading">
         {tasks.map((task) => (
-          <li key={task.id} className={styles.item}>
+          <li key={task.id} className={`${styles.item} task-list-item`}>
             <p className={styles.label}>{task.title}</p>
-            <div className={styles.actions}>
+            <div className={`${styles.actions} task-list-actions`}>
               <button
                 type="button"
-                className={styles.iconButton}
+                className={`${styles.iconButton} task-list-icon-button`}
                 aria-label={`Edit task: ${task.title}`}
                 onClick={() => setEditTarget(task)}
               >
                 <svg
                   className={styles.icon}
-                  role="img"
                   aria-hidden="true"
                   focusable="false"
                 >
@@ -48,13 +53,12 @@ function TaskList() {
               </button>
               <button
                 type="button"
-                className={styles.iconButton}
+                className={`${styles.iconButton} task-list-icon-button`}
                 aria-label={`Delete task: ${task.title}`}
                 onClick={() => setDeleteTarget(task)}
               >
                 <svg
                   className={styles.icon}
-                  role="img"
                   aria-hidden="true"
                   focusable="false"
                 >

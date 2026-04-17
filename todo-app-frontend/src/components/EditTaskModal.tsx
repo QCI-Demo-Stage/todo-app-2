@@ -15,7 +15,7 @@ type EditTaskModalProps = {
 function EditTaskModal({ task, isOpen, onClose }: EditTaskModalProps) {
   const dispatch = useAppDispatch();
   const titleId = useId();
-  const titleLabelId = useId();
+  const titleFieldLabelId = useId();
   const [title, setTitle] = useState(task.title);
 
   useEffect(() => {
@@ -62,7 +62,7 @@ function EditTaskModal({ task, isOpen, onClose }: EditTaskModalProps) {
           Edit task
         </h2>
         <div className={styles.field}>
-          <span id={titleLabelId} className={styles.label}>
+          <span id={titleFieldLabelId} className={styles.label}>
             Title
           </span>
           <input
@@ -71,7 +71,7 @@ function EditTaskModal({ task, isOpen, onClose }: EditTaskModalProps) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             autoComplete="off"
-            aria-labelledby={titleLabelId}
+            aria-labelledby={titleFieldLabelId}
           />
         </div>
         <div className={styles.actions}>

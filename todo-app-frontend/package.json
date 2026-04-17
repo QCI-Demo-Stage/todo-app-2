@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"*.{ts,json,html}\"",
-    "preview": "vite preview"
+    "preview": "vite preview --host 127.0.0.1 --port 4173",
+    "axe": "start-server-and-test preview http://127.0.0.1:4173 \"node scripts/axe.mjs\""
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.2",
@@ -17,6 +18,8 @@
     "react-redux": "^9.2.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.2",
+    "@playwright/test": "^1.59.1",
     "@types/node": "^24.12.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
@@ -33,6 +36,7 @@
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.5.2",
     "prettier": "^3.8.3",
+    "start-server-and-test": "^3.0.2",
     "typescript": "~6.0.2",
     "vite": "^8.0.4"
   }
