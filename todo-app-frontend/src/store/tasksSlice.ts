@@ -3,7 +3,6 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 export type Task = {
   id: string;
   title: string;
-  isEditing?: boolean;
 };
 
 const initialState: Task[] = [
@@ -16,12 +15,15 @@ const tasksSlice = createSlice({
   name: 'tasks',
   initialState,
   reducers: {
-    editTask(state, action: PayloadAction<string>) {
-      const id = action.payload;
-      state.forEach((task) => {
-        const next = task;
-        next.isEditing = task.id === id;
-      });
+    updateTask(
+      state,
+      action: PayloadAction<{ id: string; title: string }>,
+    ) {
+      const { id, title } = action.payload;
+      const task = state.find((t) => t.id === id);
+      if (task) {
+        task.title = title;
+      }
     },
     deleteTask(state, action: PayloadAction<string>) {
       return state.filter((task) => task.id !== action.payload);
@@ -29,5 +31,5 @@ const tasksSlice = createSlice({
   },
 });
 
-export const { editTask, deleteTask } = tasksSlice.actions;
+export const { updateTask, deleteTask } = tasksSlice.actions;
 export default tasksSlice.reducer;
