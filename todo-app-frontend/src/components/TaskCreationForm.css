@@ -1,0 +1,112 @@
+.task-creation-form {
+  width: 100%;
+  max-width: 32rem;
+  margin-inline: auto;
+  padding: clamp(1rem, 4vw, 1.5rem);
+  text-align: start;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.875rem, 3vw, 1.25rem);
+}
+
+.task-creation-form__heading {
+  font-size: clamp(1.15rem, 2.8vw, 1.35rem);
+  margin: 0 0 0.25rem;
+  text-align: start;
+}
+
+.task-creation-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.task-creation-form__label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-weight: 500;
+  color: var(--text-h);
+  font-size: 0.95rem;
+  text-align: start;
+}
+
+.task-creation-form__label-text {
+  flex-shrink: 0;
+}
+
+.task-creation-form__input,
+.task-creation-form__textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  line-height: 1.4;
+  padding: 0.5rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+  min-height: 44px;
+}
+
+.task-creation-form__textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+
+.task-creation-form__input:focus-visible,
+.task-creation-form__textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.task-creation-form__input[aria-invalid='true'],
+.task-creation-form__textarea[aria-invalid='true'] {
+  border-color: #c53030;
+}
+
+@media (prefers-color-scheme: dark) {
+  .task-creation-form__input[aria-invalid='true'],
+  .task-creation-form__textarea[aria-invalid='true'] {
+    border-color: #f56565;
+  }
+}
+
+.task-creation-form__error {
+  font-size: 0.875rem;
+  color: #9b2c2c;
+  line-height: 1.3;
+}
+
+@media (prefers-color-scheme: dark) {
+  .task-creation-form__error {
+    color: #feb2b2;
+  }
+}
+
+.task-creation-form__submit {
+  font: inherit;
+  font-weight: 500;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  color: var(--accent);
+  background: var(--accent-bg);
+  cursor: pointer;
+  align-self: flex-start;
+  transition: border-color 0.2s;
+}
+
+.task-creation-form__submit:hover {
+  border-color: var(--accent-border);
+}
+
+.task-creation-form__submit:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
