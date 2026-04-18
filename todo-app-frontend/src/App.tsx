@@ -1,6 +1,7 @@
 import reactLogo from './assets/react.svg';
 import viteLogo from './assets/vite.svg';
 import heroImg from './assets/hero.png';
+import TaskCreationForm from './components/TaskCreationForm';
 import TaskList from './components/TaskList';
 import './App.css';
 
@@ -19,6 +20,7 @@ function App() {
             Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
           </p>
         </div>
+        <TaskCreationForm />
         <TaskList />
       </section>
 

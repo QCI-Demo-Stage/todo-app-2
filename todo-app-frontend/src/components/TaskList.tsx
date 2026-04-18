@@ -28,7 +28,20 @@ function TaskList() {
             key={task.id}
             className={`${styles.item} ${task.isEditing ? styles.itemEditing : ''}`}
           >
-            <p className={styles.label}>{task.title}</p>
+            <div className={styles.taskBody}>
+              <p className={styles.label}>{task.title}</p>
+              {task.description ? (
+                <p className={styles.meta}>{task.description}</p>
+              ) : null}
+              {task.dueDate ? (
+                <p className={styles.meta}>
+                  <span className={styles.metaLabel}>Due:</span>{' '}
+                  <time dateTime={task.dueDate}>
+                    {new Date(`${task.dueDate}T00:00:00`).toLocaleDateString()}
+                  </time>
+                </p>
+              ) : null}
+            </div>
             <div className={styles.actions}>
               <button
                 type="button"

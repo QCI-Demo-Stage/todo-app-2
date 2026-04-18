@@ -43,6 +43,13 @@
     var(--shadow);
 }
 
+.taskBody {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .label {
   margin: 0;
   min-width: 0;
@@ -51,6 +58,19 @@
   color: var(--text-h);
   font-size: clamp(0.9375rem, 2vw, 1rem);
   line-height: 1.4;
+}
+
+.meta {
+  margin: 0;
+  font-size: clamp(0.8125rem, 1.75vw, 0.875rem);
+  color: var(--text);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.metaLabel {
+  font-weight: 600;
+  color: var(--text-h);
 }
 
 .actions {

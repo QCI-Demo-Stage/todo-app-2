@@ -3,7 +3,15 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 export type Task = {
   id: string;
   title: string;
+  description?: string;
+  dueDate?: string;
   isEditing?: boolean;
+};
+
+export type NewTaskPayload = {
+  title: string;
+  description?: string;
+  dueDate?: string;
 };
 
 const initialState: Task[] = [
@@ -16,6 +24,21 @@ const tasksSlice = createSlice({
   name: 'tasks',
   initialState,
   reducers: {
+    addTask(state, action: PayloadAction<NewTaskPayload>) {
+      const { title, description, dueDate } = action.payload;
+      const id =
+        typeof crypto !== 'undefined' && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+      state.push({
+        id,
+        title: title.trim(),
+        ...(description?.trim()
+          ? { description: description.trim() }
+          : {}),
+        ...(dueDate ? { dueDate } : {}),
+      });
+    },
     editTask(state, action: PayloadAction<string>) {
       const id = action.payload;
       state.forEach((task) => {
@@ -29,5 +52,5 @@ const tasksSlice = createSlice({
   },
 });
 
-export const { editTask, deleteTask } = tasksSlice.actions;
+export const { addTask, editTask, deleteTask } = tasksSlice.actions;
 export default tasksSlice.reducer;
