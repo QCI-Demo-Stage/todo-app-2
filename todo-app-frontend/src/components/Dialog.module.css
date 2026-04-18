@@ -41,9 +41,25 @@
 }
 
 .label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--text);
+}
+
+.fieldHint {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: rgb(140 30 30);
+}
+
+@media (prefers-color-scheme: dark) {
+  .fieldHint {
+    color: rgb(248 113 113);
+  }
 }
 
 .input {

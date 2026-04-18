@@ -15,7 +15,7 @@ type EditTaskModalProps = {
 function EditTaskModal({ task, isOpen, onClose }: EditTaskModalProps) {
   const dispatch = useAppDispatch();
   const titleId = useId();
-  const titleFieldLabelId = useId();
+  const titleFieldHintId = useId();
   const [title, setTitle] = useState(task.title);
 
   useEffect(() => {
@@ -32,6 +32,7 @@ function EditTaskModal({ task, isOpen, onClose }: EditTaskModalProps) {
 
   const trimmedTitle = title.trim();
   const canSave = trimmedTitle.length > 0;
+  const titleInvalid = title.length > 0 && !canSave;
 
   const handleSave = () => {
     if (!canSave) {
@@ -62,17 +63,31 @@ function EditTaskModal({ task, isOpen, onClose }: EditTaskModalProps) {
           Edit task
         </h2>
         <div className={styles.field}>
-          <span id={titleFieldLabelId} className={styles.label}>
+          <label htmlFor="edit-task-title" className={styles.label}>
             Title
-          </span>
-          <input
-            type="text"
-            className={styles.input}
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            autoComplete="off"
-            aria-labelledby={titleFieldLabelId}
-          />
+            <input
+              id="edit-task-title"
+              type="text"
+              className={styles.input}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              autoComplete="off"
+              aria-describedby={
+                titleInvalid ? titleFieldHintId : undefined
+              }
+              aria-invalid={titleInvalid}
+              aria-required
+            />
+          </label>
+          {titleInvalid && (
+            <p
+              id={titleFieldHintId}
+              className={styles.fieldHint}
+              role="alert"
+            >
+              Task title cannot be empty.
+            </p>
+          )}
         </div>
         <div className={styles.actions}>
           <button

@@ -16,19 +16,25 @@ function TaskList() {
 
   if (tasks.length === 0) {
     return (
-      <div className={`${styles.wrapper} task-list-region`}>
+      <section
+        className={`${styles.wrapper} task-list-region`}
+        aria-labelledby="tasks-heading"
+      >
         <h2 className={styles.title} id="tasks-heading">
           Tasks
         </h2>
         <p className={styles.empty} role="status">
           No tasks yet.
         </p>
-      </div>
+      </section>
     );
   }
 
   return (
-    <div className={`${styles.wrapper} task-list-region`}>
+    <section
+      className={`${styles.wrapper} task-list-region`}
+      aria-labelledby="tasks-heading"
+    >
       <h2 className={styles.title} id="tasks-heading">
         Tasks
       </h2>
@@ -84,7 +90,7 @@ function TaskList() {
           onClose={() => setDeleteTarget(null)}
         />
       )}
-    </div>
+    </section>
   );
 }
 

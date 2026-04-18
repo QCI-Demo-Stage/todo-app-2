@@ -1,5 +1,8 @@
 /**
- * Runs axe-core against the preview URL (built app). Used by `npm run axe`.
+ * Runs axe-core against the preview URL (production build). Used by `npm run axe`.
+ *
+ * `@axe-core/react` does not support React 18+; this project uses the same axe-core
+ * engine with WCAG 2.x tags via @axe-core/playwright against the built bundle.
  */
 import { chromium } from '@playwright/test';
 import { AxeBuilder } from '@axe-core/playwright';

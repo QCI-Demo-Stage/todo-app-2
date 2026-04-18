@@ -28,4 +28,4 @@ jobs:
       - name: Build
         run: npm run build
       - name: Run axe (WCAG A/AA)
-        run: npm run build && npm run axe
+        run: npm run axe
