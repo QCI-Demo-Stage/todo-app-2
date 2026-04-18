@@ -1,13 +1,15 @@
-import { useId } from 'react';
-import { createPortal } from 'react-dom';
-import { useAppDispatch } from '../store/hooks';
-import { deleteTask } from '../store/tasksSlice';
-import useDialogFocusTrap from '../hooks/useDialogFocusTrap';
+import { useId } from "react";
+import { createPortal } from "react-dom";
+import { toast } from "react-toastify";
 
-import styles from './Dialog.module.css';
+import useDialogFocusTrap from "../hooks/useDialogFocusTrap";
+import { useAppDispatch } from "../store/hooks";
+import { deleteTask } from "../store/taskSlice";
+
+import styles from "./Dialog.module.css";
 
 type DeleteConfirmationDialogProps = {
-  taskId: string;
+  taskId: number;
   taskTitle: string;
   isOpen: boolean;
   onClose: () => void;
@@ -29,6 +31,7 @@ function DeleteConfirmationDialog({
 
   const handleConfirm = () => {
     dispatch(deleteTask(taskId));
+    toast.success("Task deleted.");
     onClose();
   };
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, type RefObject } from 'react';
+import { useEffect, useRef, type RefObject } from "react";
 
 const FOCUSABLE_SELECTOR =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -6,7 +6,7 @@ const FOCUSABLE_SELECTOR =
 function getFocusableElements(container: HTMLElement): HTMLElement[] {
   return Array.from(
     container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
-  ).filter((node) => !node.hasAttribute('disabled') && !node.hidden);
+  ).filter((node) => !node.hasAttribute("disabled") && !node.hidden);
 }
 
 /**
@@ -39,7 +39,7 @@ function useDialogFocusTrap(
     }
 
     const onDocumentKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         e.preventDefault();
         e.stopPropagation();
         onCloseRef.current();
@@ -47,7 +47,7 @@ function useDialogFocusTrap(
     };
 
     const onContainerKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
+      if (e.key !== "Tab") return;
 
       const elements = getFocusableElements(container);
       if (elements.length === 0) return;
@@ -66,12 +66,12 @@ function useDialogFocusTrap(
       }
     };
 
-    document.addEventListener('keydown', onDocumentKeyDown, true);
-    container.addEventListener('keydown', onContainerKeyDown);
+    document.addEventListener("keydown", onDocumentKeyDown, true);
+    container.addEventListener("keydown", onContainerKeyDown);
 
     return () => {
-      document.removeEventListener('keydown', onDocumentKeyDown, true);
-      container.removeEventListener('keydown', onContainerKeyDown);
+      document.removeEventListener("keydown", onDocumentKeyDown, true);
+      container.removeEventListener("keydown", onContainerKeyDown);
       previousActiveRef.current?.focus?.();
     };
   }, [isActive]);
