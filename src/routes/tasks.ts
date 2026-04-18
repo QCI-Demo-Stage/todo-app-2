@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { all, get, run } from "../db/database";
+import { BadRequestError, NotFoundError } from "../errors/httpErrors";
+import { validate } from "../middleware/validate";
 import { TodoRow, todoFromRow } from "../models/todo";
+import { createTaskSchema, updateTaskSchema } from "../validation/taskSchemas";
 
 const router = Router();
 
@@ -21,29 +24,20 @@ router.get("/", async (_req, res, next) => {
   }
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", validate(createTaskSchema), async (req, res, next) => {
   try {
-    const titleRaw = req.body?.title;
-    if (typeof titleRaw !== "string") {
-      res.status(400).json({ error: "title is required and must be a string" });
-      return;
-    }
-    const title = titleRaw.trim();
-    if (title.length === 0) {
-      res.status(400).json({ error: "title must not be empty" });
-      return;
-    }
+    const { title } = req.body as { title: string; completed?: boolean };
 
     const createdAt = new Date().toISOString();
     const result = await run(
-      "INSERT INTO todos (title, completed, createdAt) VALUES (?, 0, ?)",
-      [title, createdAt]
+      "INSERT INTO todos (title, completed, createdAt) VALUES (?, ?, ?)",
+      [title, req.body.completed === true ? 1 : 0, createdAt]
     );
     const row = await get<TodoRow>("SELECT * FROM todos WHERE id = ?", [
       result.lastID,
     ]);
     if (!row) {
-      res.status(500).json({ error: "Failed to load created todo" });
+      next(new Error("Failed to load created todo"));
       return;
     }
     res.status(201).json(todoFromRow(row));
@@ -52,78 +46,71 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.put("/:id", async (req, res, next) => {
-  try {
-    const id = parseIdParam(req.params.id ?? "");
-    if (id === null) {
-      res.status(400).json({ error: "Invalid todo id" });
-      return;
-    }
-
-    const { title: titleRaw, completed: completedRaw } = req.body ?? {};
-    const updates: string[] = [];
-    const params: unknown[] = [];
-
-    if (titleRaw !== undefined) {
-      if (typeof titleRaw !== "string") {
-        res.status(400).json({ error: "title must be a string" });
+router.put(
+  "/:id",
+  validate(updateTaskSchema),
+  async (req, res, next) => {
+    try {
+      const rawId = Array.isArray(req.params.id)
+        ? req.params.id[0]
+        : (req.params.id ?? "");
+      const id = parseIdParam(rawId);
+      if (id === null) {
+        next(new BadRequestError("Invalid todo id"));
         return;
       }
-      const title = titleRaw.trim();
-      if (title.length === 0) {
-        res.status(400).json({ error: "title must not be empty" });
+
+      const { title, completed } = req.body as {
+        title?: string;
+        completed?: boolean;
+      };
+      const updates: string[] = [];
+      const params: unknown[] = [];
+
+      if (title !== undefined) {
+        updates.push("title = ?");
+        params.push(title);
+      }
+
+      if (completed !== undefined) {
+        updates.push("completed = ?");
+        params.push(completed ? 1 : 0);
+      }
+
+      params.push(id);
+      const sql = `UPDATE todos SET ${updates.join(", ")} WHERE id = ?`;
+      const result = await run(sql, params);
+      if (result.changes === 0) {
+        next(new NotFoundError("Todo not found"));
         return;
       }
-      updates.push("title = ?");
-      params.push(title);
-    }
 
-    if (completedRaw !== undefined) {
-      if (typeof completedRaw !== "boolean") {
-        res.status(400).json({ error: "completed must be a boolean" });
+      const row = await get<TodoRow>("SELECT * FROM todos WHERE id = ?", [id]);
+      if (!row) {
+        next(new NotFoundError("Todo not found"));
         return;
       }
-      updates.push("completed = ?");
-      params.push(completedRaw ? 1 : 0);
+      res.status(200).json(todoFromRow(row));
+    } catch (err) {
+      next(err);
     }
-
-    if (updates.length === 0) {
-      res
-        .status(400)
-        .json({ error: "Provide at least one of title or completed" });
-      return;
-    }
-
-    params.push(id);
-    const sql = `UPDATE todos SET ${updates.join(", ")} WHERE id = ?`;
-    const result = await run(sql, params);
-    if (result.changes === 0) {
-      res.status(404).json({ error: "Todo not found" });
-      return;
-    }
-
-    const row = await get<TodoRow>("SELECT * FROM todos WHERE id = ?", [id]);
-    if (!row) {
-      res.status(404).json({ error: "Todo not found" });
-      return;
-    }
-    res.status(200).json(todoFromRow(row));
-  } catch (err) {
-    next(err);
   }
-});
+);
 
 router.delete("/:id", async (req, res, next) => {
   try {
-    const id = parseIdParam(req.params.id ?? "");
+    const rawId = Array.isArray(req.params.id)
+      ? req.params.id[0]
+      : (req.params.id ?? "");
+    const id = parseIdParam(rawId);
     if (id === null) {
-      res.status(400).json({ error: "Invalid todo id" });
+      next(new BadRequestError("Invalid todo id"));
       return;
     }
 
     const result = await run("DELETE FROM todos WHERE id = ?", [id]);
     if (result.changes === 0) {
-      res.status(404).json({ error: "Todo not found" });
+      next(new NotFoundError("Todo not found"));
       return;
     }
     res.status(200).json({ message: "Todo deleted", id });

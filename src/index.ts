@@ -1,6 +1,7 @@
 import cors from "cors";
 import express from "express";
 import { migrate } from "./db/migrate";
+import { errorHandler } from "./middleware/errorHandler";
 import healthRouter from "./routes/health";
 import tasksRouter from "./routes/tasks";
 
@@ -12,6 +13,8 @@ app.use(express.json());
 
 app.use("/health", healthRouter);
 app.use("/tasks", tasksRouter);
+
+app.use(errorHandler);
 
 void migrate()
   .then(() => {
