@@ -33,6 +33,15 @@ module.exports = {
     },
   },
   rules: {
+    'jsx-a11y/label-has-associated-control': [
+      'error',
+      {
+        labelComponents: [],
+        controlComponents: [],
+        assert: 'either',
+        depth: 5,
+      },
+    ],
     'react/react-in-jsx-scope': 'off',
     'react/jsx-filename-extension': [
       'error',
