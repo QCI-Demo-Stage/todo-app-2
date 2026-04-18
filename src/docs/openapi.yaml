@@ -48,7 +48,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Todo"
         "400":
-          description: Invalid input
+          description: Validation or bad request
           content:
             application/json:
               schema:
@@ -82,7 +82,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Todo"
         "400":
-          description: Invalid id or body
+          description: Invalid id, validation error, or empty body object
           content:
             application/json:
               schema:
@@ -130,7 +130,7 @@ components:
       name: id
       in: path
       required: true
-      description: Numeric task identifier (positive integer)
+      description: Numeric task identifier (positive integer, no leading zeros)
       schema:
         type: integer
         minimum: 1
@@ -149,7 +149,7 @@ components:
           type: boolean
         createdAt:
           type: string
-          description: ISO 8601 timestamp from SQLite
+          description: ISO 8601 timestamp
           example: "2026-04-18T12:00:00.000Z"
     CreateTodoRequest:
       type: object
@@ -176,7 +176,7 @@ components:
       properties:
         error:
           type: string
-          description: Human-readable error message (generic text for 500 responses)
+          description: Human-readable error message (generic for 500 responses)
         details:
-          description: Optional extra validation or diagnostic information
+          description: Optional Joi validation details or other diagnostic info
           nullable: true

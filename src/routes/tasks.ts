@@ -1,138 +1,121 @@
 import { Router } from "express";
 import { all, get, run } from "../db/database";
-import { rowToTodo, type TodoRow } from "../types/todo";
-import type { ApiError } from "../middleware/errorHandler";
+import { BadRequestError, NotFoundError } from "../errors/httpErrors";
+import { validate } from "../middleware/validate";
+import { TodoRow, todoFromRow } from "../models/todo";
+import { createTaskSchema, updateTaskSchema } from "../validation/taskSchemas";
 
 const router = Router();
 
-function parseId(param: string): number {
-  const id = Number(param);
-  if (!Number.isInteger(id) || id < 1) {
-    const err: ApiError = new Error("Invalid task id");
-    err.statusCode = 400;
-    throw err;
+function parseIdParam(raw: string): number | null {
+  const id = Number.parseInt(raw, 10);
+  if (!Number.isFinite(id) || id < 1 || String(id) !== raw) {
+    return null;
   }
   return id;
 }
 
 router.get("/", async (_req, res, next) => {
   try {
-    const rows = await all<TodoRow>(
-      "SELECT id, title, completed, created_at FROM tasks ORDER BY id ASC"
-    );
-    res.json(rows.map(rowToTodo));
-  } catch (e) {
-    next(e);
+    const rows = await all<TodoRow>("SELECT * FROM todos ORDER BY id ASC");
+    res.status(200).json(rows.map(todoFromRow));
+  } catch (err) {
+    next(err);
   }
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", validate(createTaskSchema), async (req, res, next) => {
   try {
-    const title = req.body?.title;
-    if (typeof title !== "string" || title.trim().length === 0) {
-      const err: ApiError = new Error("title is required and must be a non-empty string");
-      err.statusCode = 400;
-      throw err;
-    }
-    let completed = false;
-    if (req.body?.completed !== undefined) {
-      if (typeof req.body.completed !== "boolean") {
-        const err: ApiError = new Error("completed must be a boolean when provided");
-        err.statusCode = 400;
-        throw err;
-      }
-      completed = req.body.completed;
-    }
+    const { title } = req.body as { title: string; completed?: boolean };
+
+    const createdAt = new Date().toISOString();
     const result = await run(
-      "INSERT INTO tasks (title, completed) VALUES (?, ?)",
-      [title.trim(), completed ? 1 : 0]
+      "INSERT INTO todos (title, completed, createdAt) VALUES (?, ?, ?)",
+      [title, req.body.completed === true ? 1 : 0, createdAt]
     );
-    const row = await get<TodoRow>(
-      "SELECT id, title, completed, created_at FROM tasks WHERE id = ?",
-      [result.lastID]
-    );
+    const row = await get<TodoRow>("SELECT * FROM todos WHERE id = ?", [
+      result.lastID,
+    ]);
     if (!row) {
-      const err: ApiError = new Error("Failed to load created task");
-      err.statusCode = 500;
-      throw err;
+      next(new Error("Failed to load created todo"));
+      return;
     }
-    res.status(201).json(rowToTodo(row));
-  } catch (e) {
-    next(e);
+    res.status(201).json(todoFromRow(row));
+  } catch (err) {
+    next(err);
   }
 });
 
-router.put("/:id", async (req, res, next) => {
-  try {
-    const id = parseId(req.params.id);
-    const existing = await get<TodoRow>(
-      "SELECT id, title, completed, created_at FROM tasks WHERE id = ?",
-      [id]
-    );
-    if (!existing) {
-      const err: ApiError = new Error("Task not found");
-      err.statusCode = 404;
-      throw err;
-    }
-    const hasTitle = req.body?.title !== undefined;
-    const hasCompleted = req.body?.completed !== undefined;
-    if (!hasTitle && !hasCompleted) {
-      const err: ApiError = new Error(
-        "Request body must include at least one of: title, completed"
-      );
-      err.statusCode = 400;
-      throw err;
-    }
-    let title = existing.title;
-    if (hasTitle) {
-      if (typeof req.body.title !== "string" || req.body.title.trim().length === 0) {
-        const err: ApiError = new Error("title must be a non-empty string when provided");
-        err.statusCode = 400;
-        throw err;
+router.put(
+  "/:id",
+  validate(updateTaskSchema),
+  async (req, res, next) => {
+    try {
+      const rawId = Array.isArray(req.params.id)
+        ? req.params.id[0]
+        : (req.params.id ?? "");
+      const id = parseIdParam(rawId);
+      if (id === null) {
+        next(new BadRequestError("Invalid todo id"));
+        return;
       }
-      title = req.body.title.trim();
-    }
-    let completed = existing.completed === 1;
-    if (hasCompleted) {
-      if (typeof req.body.completed !== "boolean") {
-        const err: ApiError = new Error("completed must be a boolean when provided");
-        err.statusCode = 400;
-        throw err;
+
+      const { title, completed } = req.body as {
+        title?: string;
+        completed?: boolean;
+      };
+      const updates: string[] = [];
+      const params: unknown[] = [];
+
+      if (title !== undefined) {
+        updates.push("title = ?");
+        params.push(title);
       }
-      completed = req.body.completed;
+
+      if (completed !== undefined) {
+        updates.push("completed = ?");
+        params.push(completed ? 1 : 0);
+      }
+
+      params.push(id);
+      const sql = `UPDATE todos SET ${updates.join(", ")} WHERE id = ?`;
+      const result = await run(sql, params);
+      if (result.changes === 0) {
+        next(new NotFoundError("Todo not found"));
+        return;
+      }
+
+      const row = await get<TodoRow>("SELECT * FROM todos WHERE id = ?", [id]);
+      if (!row) {
+        next(new NotFoundError("Todo not found"));
+        return;
+      }
+      res.status(200).json(todoFromRow(row));
+    } catch (err) {
+      next(err);
     }
-    await run("UPDATE tasks SET title = ?, completed = ? WHERE id = ?", [
-      title,
-      completed ? 1 : 0,
-      id,
-    ]);
-    const row = await get<TodoRow>(
-      "SELECT id, title, completed, created_at FROM tasks WHERE id = ?",
-      [id]
-    );
-    if (!row) {
-      const err: ApiError = new Error("Task not found after update");
-      err.statusCode = 500;
-      throw err;
-    }
-    res.json(rowToTodo(row));
-  } catch (e) {
-    next(e);
   }
-});
+);
 
 router.delete("/:id", async (req, res, next) => {
   try {
-    const id = parseId(req.params.id);
-    const result = await run("DELETE FROM tasks WHERE id = ?", [id]);
+    const rawId = Array.isArray(req.params.id)
+      ? req.params.id[0]
+      : (req.params.id ?? "");
+    const id = parseIdParam(rawId);
+    if (id === null) {
+      next(new BadRequestError("Invalid todo id"));
+      return;
+    }
+
+    const result = await run("DELETE FROM todos WHERE id = ?", [id]);
     if (result.changes === 0) {
-      const err: ApiError = new Error("Task not found");
-      err.statusCode = 404;
-      throw err;
+      next(new NotFoundError("Todo not found"));
+      return;
     }
     res.status(204).send();
-  } catch (e) {
-    next(e);
+  } catch (err) {
+    next(err);
   }
 });
 

@@ -4,8 +4,7 @@ import path from "path";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 
-import "./db/database";
-import { ensureSchema } from "./db/schema";
+import { migrate } from "./db/migrate";
 import { errorHandler } from "./middleware/errorHandler";
 import healthRouter from "./routes/health";
 import tasksRouter from "./routes/tasks";
@@ -23,13 +22,13 @@ app.use("/tasks", tasksRouter);
 
 app.use(errorHandler);
 
-void ensureSchema()
+void migrate()
   .then(() => {
     app.listen(port, () => {
       console.log(`Server listening on http://localhost:${port}`);
     });
   })
   .catch((err: unknown) => {
-    console.error("Failed to initialize database schema:", err);
+    console.error("Database migration failed:", err);
     process.exit(1);
   });

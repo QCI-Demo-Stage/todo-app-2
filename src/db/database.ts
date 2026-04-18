@@ -1,7 +1,7 @@
 import path from "path";
 import sqlite3 from "sqlite3";
 
-const dbPath = path.resolve(__dirname, "../../database.sqlite");
+const dbPath = path.join(process.cwd(), "database.sqlite");
 
 export const db = new sqlite3.Database(dbPath);
 
@@ -29,7 +29,7 @@ export function get<T = unknown>(
       if (err) {
         reject(err);
       } else {
-        resolve(row as T);
+        resolve(row as T | undefined);
       }
     });
   });

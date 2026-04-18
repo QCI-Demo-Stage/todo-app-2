@@ -1,6 +1,6 @@
 # Todo App 2 – Backend
 
-Express REST API with SQLite persistence for Todo (task) items. Interactive API documentation is served at `/api-docs` (Swagger UI) using the OpenAPI 3.0 spec in `src/docs/openapi.yaml`.
+Express REST API with SQLite persistence for Todo items. Interactive API documentation is served at `/api-docs` (Swagger UI) using the OpenAPI 3.0 spec in `src/docs/openapi.yaml`.
 
 ## Prerequisites
 
@@ -33,16 +33,16 @@ npm start
 
 ## OpenAPI verification
 
-Keep the spec aligned with the implementation whenever you change routes or payloads.
+Keep the spec aligned with the implementation whenever you change routes, validation, or response shapes.
 
-1. **Schema validation** – validates `src/docs/openapi.yaml` syntax and structure:
+1. **Schema validation** – validates `src/docs/openapi.yaml` syntax and structure, then checks that Express routes in `src/routes/tasks.ts` match OpenAPI paths (and vice versa):
 
    ```bash
    npm run validate-openapi
    ```
 
-   This runs `@apidevtools/swagger-cli` (`swagger-cli validate`) and a small script that checks each Express route in `src/routes/tasks.ts` against the OpenAPI paths (and the reverse).
+   This runs `@apidevtools/swagger-cli` (`swagger-cli validate`) and `scripts/validate-openapi-routes.ts`.
 
-2. **Manual cross-check** – compare request bodies, status codes, and JSON shapes in `src/routes/tasks.ts` and `src/middleware/errorHandler.ts` with `src/docs/openapi.yaml` (e.g. `Todo`, `ErrorResponse`, and each operation’s responses).
+2. **Manual cross-check** – compare Joi schemas in `src/validation/taskSchemas.ts`, handlers in `src/routes/tasks.ts`, and `src/middleware/errorHandler.ts` with `src/docs/openapi.yaml` (status codes, `Todo`, `ErrorResponse`, request bodies).
 
-3. **Smoke test in the browser** – with `npm run dev`, open `/api-docs`, try **Try it out** on each operation, and confirm responses match the documented codes and schemas.
+3. **Smoke test in the browser** – with `npm run dev`, open `/api-docs`, use **Try it out** on each operation, and confirm responses match the documented codes and schemas (including `204` with no body on delete).

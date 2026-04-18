@@ -1,22 +1,34 @@
-import type { NextFunction, Request, Response } from "express";
-
-export interface ApiError extends Error {
-  statusCode?: number;
-  details?: unknown;
-}
+import { NextFunction, Request, Response } from "express";
+import { HttpError } from "../errors/httpErrors";
 
 export function errorHandler(
-  err: ApiError,
+  err: unknown,
   _req: Request,
   res: Response,
-  _next: NextFunction
+  next: NextFunction
 ): void {
-  const status = err.statusCode ?? 500;
-  const body: { error: string; details?: unknown } = {
-    error: status === 500 ? "Internal Server Error" : err.message,
-  };
-  if (err.details !== undefined) {
-    body.details = err.details;
+  if (res.headersSent) {
+    next(err);
+    return;
   }
-  res.status(status).json(body);
+
+  if (err instanceof HttpError) {
+    const body: { error: string; details?: unknown } = {
+      error: err.message,
+    };
+    if (err.details !== undefined) {
+      body.details = err.details;
+    }
+    res.status(err.statusCode).json(body);
+    return;
+  }
+
+  console.error(err);
+  if (err instanceof Error && err.stack) {
+    console.error(err.stack);
+  }
+
+  res.status(500).json({
+    error: "Internal Server Error",
+  });
 }

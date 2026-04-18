@@ -1,8 +1,9 @@
+/** SQLite row shape for the `todos` table */
 export interface TodoRow {
   id: number;
   title: string;
   completed: number;
-  created_at: string;
+  createdAt: string;
 }
 
 export interface Todo {
@@ -12,11 +13,11 @@ export interface Todo {
   createdAt: string;
 }
 
-export function rowToTodo(row: TodoRow): Todo {
+export function todoFromRow(row: TodoRow): Todo {
   return {
     id: row.id,
     title: row.title,
-    completed: row.completed === 1,
-    createdAt: row.created_at,
+    completed: row.completed !== 0,
+    createdAt: row.createdAt,
   };
 }
