@@ -4,10 +4,11 @@
   "description": "Initialized by Tymeline so the AI Employee can run tasks.",
   "main": "dist/src/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && mkdir -p dist/src/docs && cp src/docs/openapi.yaml dist/src/docs/openapi.yaml",
     "start": "node dist/src/index.js",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "test:db": "ts-node scripts/test-db-connection.ts",
+    "validate-openapi": "swagger-cli validate src/docs/openapi.yaml && ts-node scripts/validate-openapi-routes.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -25,12 +26,18 @@
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "sqlite3": "^6.0.1",
+    "swagger-ui-express": "^5.0.1",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
+    "@apidevtools/swagger-cli": "^4.0.4",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
-    "@types/node": "^25.6.0"
+    "@types/node": "^25.6.0",
+    "@types/swagger-ui-express": "^4.1.8",
+    "@types/yamljs": "^0.2.34",
+    "ts-node": "^10.9.2"
   }
 }
